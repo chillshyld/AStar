@@ -58,18 +58,30 @@
 %% 		add to heap
 
 
-a_star(Start,Destination,Path):-
-	add_to_heap(heap(nil,0),0,Start,InitHeap),
-	search(x,Destination,InitHeap,[],Path).
+%% a_star(Start,Destination,Path):-
+%% 	add_to_heap(heap(nil,0),0,Start,InitHeap),
+%% 	assert(parent_of(x,x)),
+%% 	search(x,Destination, heap(t((3, 0), 3, [t((4, 0), 4, [t((5, 0), 5, []), t((3, 1), 6, [t((..., ...), 6, [])])])]), 5),[],TempPath),
+%% 	removeAtIndex(TempPath,0,Path).
 
 
-%% if current node is the same as destination node
-search(Current,Destination,OpenList,ClosedList,Path):-
-	Current == Destination,!.
+%% %% if current node is the same as destination node
+%% search(Current,Destination,OpenList,ClosedList,Path):-
+%% 	%%Check if current node matched with the destination, if yes return true and terminate
+%% 	Current == Destination,
+%% 	parent_of(Destination,Parent),
+%% 	append([Parent],[Destination],Path),
+%% 	!.
 
-search(Current,Destination,OpenList,ClosedList,Path):-
-	get_from_heap(OpenList,Value,ResCurrent,ResOpenList),
-	search(ResCurrent,Destination,ResOpenList,ClosedList,Path).
+%% search(Current,Destination,OpenList,ClosedList,ResPath):-
+%% 	%%Get node with the least value from heap
+%% 	get_from_heap(OpenList,Value,ResCurrent,ResOpenList),
+%% 	%%Setting parent to current node
+%% 	assert(parent_of(ResCurrent,Current)),
+%% 	search(ResCurrent,Destination,ResOpenList,ClosedList,[H|T]),
+%% 	parent_of(H,X),
+%% 	append([X],[H|T],ResPath).
+	
 
 
 
@@ -77,11 +89,33 @@ search(Current,Destination,OpenList,ClosedList,Path):-
 
 
 
+removeAtIndex([_|T],0,T).
+removeAtIndex([H|T],Index,[H|Res]):-
+	Index > -1,
+	Counter is Index - 1,
+	removeAtIndex(T,Counter,Res).
 
 
 
+search(Current,Destination,OpenList,Path):-
+	Current == Destination,
+	append([],[Destination],Path),
+	!.
 
 
+search(Current,Destination,OpenList,Path):-
+	%% add to open list
+
+	%%pop node with least value from heap
+	get_from_heap(OpenList,Value,NextNode,ResOpenList),
+	%%Temp
+	assert(parent_of(NextNode,Current)),
+	search(NextNode,Destination,ResOpenList,[H|T]),
+	parent_of(H,Parent),
+	append([Parent],[H|T],Path).
+
+
+	
 
 
 
